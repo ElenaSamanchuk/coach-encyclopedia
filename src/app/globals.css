@@ -1,0 +1,391 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f5f5f5;
+  --white: #ffffff;
+  --ink: #242424;
+  --ink-soft: #363636;
+  --muted: #8a8e96;
+  --orange: #ff6332;
+  --orange-2: #ff7e55;
+  --orange-3: #ff612f;
+  --orange-soft: rgba(255, 127, 55, 0.3);
+  --peach: #ffdfd5;
+  --red: #e42525;
+  --dark: #14161a;
+  --dark-card: #1f2126;
+  --hairline: #ebebeb;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-orange: var(--orange);
+  --color-orange-soft: var(--orange-soft);
+  --color-red: var(--red);
+  --color-dark: var(--dark);
+  --color-dark-card: var(--dark-card);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-display);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-weight: 500;
+  overflow-x: clip;
+}
+
+/*
+ * The real display face from the design, self-hosted. Declared across the whole
+ * weight range so the single Dark cut answers every font-weight and the browser
+ * never synthesises a fake bold. Lives in /type (not /public/fonts, which the
+ * Tilda build wipes and refills with hashed next/font files).
+ */
+@font-face {
+  font-family: "Murs Gothic Wide Dark";
+  src:
+    url("/coach-encyclopedia/type/murs-gothic-wide-dark.woff2") format("woff2"),
+    url("/coach-encyclopedia/type/murs-gothic-wide-dark.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Name the family literally: `var(--font-display)` is circular in @theme and
+   invalid on Tilda unless the Next hashed class is on .kin-root — then the
+   whole `font-family` declaration drops and headings inherit Manrope/Exo 2.
+   The face has no ₽ glyph, so Manrope must stay next in the stack. */
+.font-display {
+  font-family: "Murs Gothic Wide Dark", var(--font-manrope, system-ui), sans-serif;
+  font-weight: 400;
+  letter-spacing: normal;
+  font-synthesis-weight: none;
+}
+
+/* ---- gradients & shadows lifted verbatim from the Figma nodes ---- */
+.grad-orange {
+  background-image: linear-gradient(81.65deg, #ff7e55 1.02%, #ff612f 92.9%);
+}
+.shadow-cta {
+  box-shadow: 0 4px 5.1px 0 rgba(197, 197, 197, 0.38);
+}
+.shadow-cta-dark {
+  box-shadow: 0 4px 5.1px 0 rgba(0, 0, 0, 0.38);
+}
+.shadow-card {
+  box-shadow: 0 20px 25px -10px rgba(155, 158, 164, 0.2);
+}
+.shadow-hero-card {
+  box-shadow: 0 22px 11.9px -10px rgba(166, 166, 166, 0.26);
+}
+.grad-hero-d {
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.25) 100%),
+    linear-gradient(124.48deg, #f4f4f4 0%, #c4c4c4 100%);
+}
+.grad-hero-m {
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.25) 100%),
+    linear-gradient(101.31deg, #f4f4f4 0%, #e4e4e4 100%);
+}
+.logo-fitness {
+  background-image: radial-gradient(
+    circle at 90% 65%,
+    #ff6732 0%,
+    #fe9959 50%,
+    #fdca7f 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* FAQ open/closed is expressed through data attributes so the static Tilda
+   export can drive it without React. Height animates via grid-template-rows. */
+[data-kin-faq-item] [data-kin-faq-answer] {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.5s ease,
+    opacity 0.45s ease;
+}
+[data-kin-faq-item][data-kin-open="true"] [data-kin-faq-answer] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+[data-kin-faq-item] [data-kin-faq-answer] > * {
+  overflow: hidden;
+  min-height: 0;
+}
+[data-kin-faq-item] [data-kin-faq-chevron] {
+  transition: transform 0.5s ease;
+}
+[data-kin-faq-item][data-kin-open="true"] [data-kin-faq-chevron] {
+  transform: rotate(180deg);
+}
+
+/* Scroll reveal — Tilda JS / Canvas observer toggle `.kin-in`. */
+[data-kin-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.55s ease;
+}
+[data-kin-reveal].kin-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kin-faq-item] [data-kin-faq-answer],
+  [data-kin-faq-item] [data-kin-faq-chevron],
+  [data-kin-reveal] {
+    transition: none;
+  }
+  [data-kin-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Wave decoration: the Figma node is a -23.07deg rotated vector sheet. */
+.wave {
+  position: absolute;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  transform: rotate(-23.07deg);
+}
+
+/*
+ * Tilda header (#t-header rec742939927) is a Zero Block 1200 grid, centered
+ * with `left: calc(50% - 600px + Npx)` — no upscale at ≥1200. Inner nav
+ * sits 20px in, ЛК ends at 1182. Our 1440 artboard stays pixel-true; the
+ * visible text/card column is 1200 so it shares that grid (120px gutters).
+ */
+[data-kin-canvas="1440"] .kin-col {
+  width: 1160px;
+  margin-inline: auto;
+}
+
+/*
+ * Full-bleed solid fills on the desktop 1440 canvas.
+ * Background lives on ::before (not 100vw on the section itself) so inner
+ * layout stays 1440. Under `zoom` (viewport < 1440) 100vw is slightly
+ * small — the canvas already fills the viewport, so no gap. Do not put
+ * overflow:hidden on the same node as .kin-bleed or the pseudo is clipped.
+ */
+[data-kin-canvas="1440"] .kin-bleed {
+  --kin-bleed: var(--bg);
+  isolation: isolate;
+}
+[data-kin-canvas="1440"] .kin-bleed::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  background: var(--kin-bleed);
+  z-index: -1;
+  pointer-events: none;
+}
+[data-kin-canvas="1440"] .kin-bleed-white {
+  --kin-bleed: #fff;
+}
+[data-kin-canvas="1440"] .kin-bleed-dark {
+  --kin-bleed: #14161a;
+}
+
+/*
+ * Click-to-play video. The poster + custom play button sit in one overlay that
+ * fades out once `data-kin-playing` flips (React on the site, the Tilda JS
+ * runtime on Tilda), handing the frame over to the native controls.
+ */
+[data-kin-video] video {
+  background: #000;
+}
+[data-kin-video][data-kin-playing="true"] [data-kin-video-play] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*
+ * Mobile sticky CTA. Sits outside the zoomed canvas, so it is measured in real
+ * CSS pixels and stays put while the page scrolls. Hidden until the observer
+ * reports that no section with its own «Купить» is on screen.
+ */
+[data-kin-sticky-cta] {
+  opacity: 0;
+  transform: translateY(160%);
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+[data-kin-sticky-cta][data-kin-show="true"] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-kin-sticky-cta] {
+    transition: none;
+  }
+}
+
+/*
+ * Vertical rhythm between blocks. One step per artboard — desktop 96 / mobile
+ * 56 — so the scale lives here instead of a per-section `mt-[…]`. The step
+ * equals the bottom padding the backgrounded sections already carry from the
+ * design, so a white block followed by a gap reads as one even rhythm instead
+ * of two different spaces stacked. The page tail matches the step.
+ */
+[data-kin-canvas="1440"] .kin-gap {
+  margin-top: 96px;
+}
+[data-kin-canvas="1440"] .kin-tail {
+  padding-bottom: 96px;
+}
+[data-kin-canvas="430"] .kin-gap {
+  margin-top: 56px;
+}
+[data-kin-canvas="430"] .kin-tail {
+  padding-bottom: 56px;
+}
+
+/*
+ * Optical trim for headings that open a block. Manrope's line box carries
+ * ~0.36em of blank space above the cap height, so a heading sits visually
+ * further from the previous block than a card edge or a photo does — the same
+ * 40/80px gap then reads as two different spaces. Pull the box back by that
+ * blank so every gap in the rhythm measures the same distance edge-to-ink.
+ * Blocks with their own background are excluded: there the visible boundary is
+ * the background box, not the text.
+ */
+.kin-h-trim {
+  margin-top: -0.363em;
+}
+/* The display face sits tighter in its line box than Manrope does. */
+.kin-h-trim-display {
+  margin-top: -0.296em;
+}
+
+/*
+ * Каскад: дети помеченного контейнера приходят по очереди, а не все разом.
+ * Ступени в блоке сертификата и мокап телефона появляются заметнее, чем
+ * секция целиком, — поэтому у них своя, более длинная дистанция.
+ */
+[data-kin-stagger] > *,
+[data-kin-rise] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+[data-kin-rise] {
+  transform: translateY(40px);
+}
+[data-kin-reveal].kin-in [data-kin-stagger] > *,
+[data-kin-reveal].kin-in [data-kin-rise] {
+  opacity: 1;
+  transform: none;
+}
+[data-kin-stagger] > *:nth-child(1) {
+  transition-delay: 0.08s;
+}
+[data-kin-stagger] > *:nth-child(2) {
+  transition-delay: 0.18s;
+}
+[data-kin-stagger] > *:nth-child(3) {
+  transition-delay: 0.28s;
+}
+[data-kin-stagger] > *:nth-child(4) {
+  transition-delay: 0.38s;
+}
+[data-kin-stagger] > *:nth-child(5) {
+  transition-delay: 0.48s;
+}
+[data-kin-stagger] > *:nth-child(n + 6) {
+  transition-delay: 0.58s;
+}
+[data-kin-rise] {
+  transition-delay: 0.12s;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-kin-stagger] > *,
+  [data-kin-rise] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/*
+ * Состояние «акция кончилась». Статика собирается до дедлайна, поэтому в
+ * разметке лежит акционный вариант, а рантайм после SALE_END подставляет
+ * тексты из data-kin-after и убирает всё, что помечено data-kin-sale-only:
+ * зачёркнутую цену, плашки со сроком и сам таймер.
+ */
+[data-kin-sale-over] [data-kin-sale-only] {
+  display: none !important;
+}
+/*
+ * Карточка с ценой в герое рассчитана на таймер: на десктопе он занимал
+ * правую половину, на мобилке — нижнюю. После акции карточка сжимается до
+ * содержимого, иначе остаётся пустое белое поле.
+ */
+[data-kin-canvas="1440"][data-kin-sale-over] [data-kin-sale-shrink] {
+  width: 339px;
+}
+[data-kin-canvas="430"][data-kin-sale-over] [data-kin-sale-shrink] {
+  height: auto;
+}
+/*
+ * Мобильный герой фиксированной высоты: после сжатия карточки с ценой под ней
+ * оставался пустой кусок в 132px — ровно на таймер и плашку со скидкой.
+ */
+[data-kin-canvas="430"][data-kin-sale-over] [data-kin-sale-trim] {
+  height: 623px;
+}
+/*
+ * Финальный блок на мобилке: плашка со сроком стояла над «Доступ ко всем
+ * материалам», после её скрытия между чипом и кнопкой оставалось 85px.
+ * Кнопка поднимается, блок укорачивается на ту же разницу.
+ */
+[data-kin-canvas="430"][data-kin-sale-over] [data-kin-sale-trim-final] {
+  height: 331px;
+}
+[data-kin-canvas="430"][data-kin-sale-over] [data-kin-sale-lift] {
+  top: 234px;
+}
+/*
+ * Плавающая кнопка теряет верхнюю строку со сроком и становится 35px вместо
+ * 49. Держим её на 51 — как остальные кнопки на мобильной вёрстке.
+ */
+[data-kin-sticky-cta][data-kin-sale-over] > a {
+  min-height: 51px;
+}
+
+/* Меню-оверлей: состояние в data-kin-open, чтобы статический экспорт для
+   Тильды переключал его без React. display, а не visibility — панель не должна
+   ловить клики и попадать в таб-порядок, пока закрыта. */
+[data-kin-menu-panel] {
+  display: none;
+}
+[data-kin-menu][data-kin-open="true"] [data-kin-menu-panel] {
+  display: flex;
+}
